@@ -1,22 +1,14 @@
-from html.parser import HTMLParser
 import urllib.request
-import urllib.parse
-import urllib.error
+from bs4 import BeautifulSoup
+import tkinter as tk
 
-url = 'https://google.com'
-html = urllib.request.urlopen(url).read().decode()
+url = 'https://yandex.ru'
+html = urllib.request.urlopen(url).read()
 
-#print(html)
-count = 0
+soup = BeautifulSoup(html, 'html.parser')
+tags = soup.find_all()
 
-class MyHTMLParser(HTMLParser):
+tag_dict = {}
 
-    def handle_starttag(self, tag, attrs):
-        count += 1
-
-
-
-parser = MyHTMLParser()
-parser.feed(html)
-
-#print(type(html))
+for tag in tags:
+    tag_dict[tag.name] = tag_dict.get(tag.name, 0) + 1
