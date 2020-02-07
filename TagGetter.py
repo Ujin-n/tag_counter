@@ -1,11 +1,16 @@
-class TagCounter:
+import urllib.request
+from bs4 import BeautifulSoup
+
+
+class TagGetter:
+    """ Gets and counts all tags from passed url page. """
+
     def __init__(self, url):
+        """ Initialize tag getter and set input url. """
         self.url = url
 
     def run(self):
-        import urllib.request
-        from bs4 import BeautifulSoup
-
+        """ Makes url request, parses html page, counts tags and prints them out. """
         html = urllib.request.urlopen(self.url).read()
 
         soup = BeautifulSoup(html, 'html.parser')

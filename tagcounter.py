@@ -1,5 +1,6 @@
 import argparse
-import tagcounter_get as tg
+import TagGetter as tg
+import TagCounterGUI as tcg
 
 # Parsing arguments
 parser = argparse.ArgumentParser()
@@ -9,12 +10,13 @@ args = parser.parse_args()
 
 if not args.get and not args.view:
     # Calling GUI
-    ...
+    tag_counter_gui = tcg.TagCounterGUI()
+    tag_counter_gui.run()
 
 elif args.get:
     # Getting the list of tags
-    tag_counter = tg.TagCounter(args.get)
-    tag_counter.run()
+    tag_getter = tg.TagGetter(args.get)
+    tag_getter.run()
 
 elif args.view:
     # Reading saved data from database
