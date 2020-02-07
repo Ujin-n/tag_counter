@@ -15,8 +15,17 @@ class TagCounterGUI:
     def create_widgets(self, root):
         """ Create widgets. """
         # URL input
-        label_1 = Label(root, text="Enter url: ", font=("Arial Bold", self.font))
+        def clicked():
+            res = txt.get()
+
+        label_1 = Label(root, text="URL", pady=5, font=("Arial Bold", self.font))
         label_1.grid(column=0, row=0)
+
+        txt = Entry(root, width=50)
+        txt.grid(column=2, row=0)
+
+        button_1 = Button(root, text="        OK        ", command=clicked)
+        button_1.grid(column=0, row=1, pady=5, padx=5)
 
     def run(self):
         """ Start application. """
