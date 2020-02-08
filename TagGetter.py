@@ -11,6 +11,7 @@ class TagGetter:
 
     def run(self):
         """ Makes url request, parses html page, counts tags and prints them out. """
+        self.url_verification()
         html = urllib.request.urlopen(self.url).read()
 
         soup = BeautifulSoup(html, 'html.parser')
@@ -21,5 +22,8 @@ class TagGetter:
         for tag in tags:
             tag_dict[tag.name] = tag_dict.get(tag.name, 0) + 1
 
-        for tag, count in tag_dict.items():
-            print(tag + ":", count)
+        return tag_dict
+
+    def url_verification(self):
+        if not self.url.lower().startswith('https://'):
+            self.url = 'https://' + self.url
