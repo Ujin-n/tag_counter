@@ -1,40 +1,36 @@
 from tkinter import *
 
 
-class TagCounterGUI:
+class TagCounterGUI(Frame):
     """ GUI for tag counter application. """
-    def __init__(self):
+
+    def __init__(self, master):
         """ Initialize GUI class and set some settings. """
-        # main window settings
-        self.screen_size = '400x250'
-        self.title = "Tag Counter"
+        super().__init__(master)
+        self.grid()
+        self.create_widgets()
 
-        # widget settings
-        self.font = 13
+        self.url_entry_label = None
 
-    def create_widgets(self, root):
-        """ Create widgets. """
+    def create_widgets(self):
+        """ Create all widgets on a window. """
         # URL input
-        def clicked():
-            res = txt.get()
+        url_entry_label = Label(self, text="URL", pady=5, font=("Arial Bold", 13))
+        url_entry_label.grid(column=0, row=0)
 
-        label_1 = Label(root, text="URL", pady=5, font=("Arial Bold", self.font))
-        label_1.grid(column=0, row=0)
+        self.url_entry_label = Entry(self, width=50)
+        self.url_entry_label.grid(column=2, row=0, padx=5)
 
-        txt = Entry(root, width=50)
-        txt.grid(column=2, row=0)
+        btn_download = Button(self, text="Download", command=self.download_tags, width=10, height=1)
+        btn_download.grid(column=0, row=1, pady=5, padx=5)
 
-        button_1 = Button(root, text="        OK        ", command=clicked)
-        button_1.grid(column=0, row=1, pady=5, padx=5)
+        btn_read = Button(self, text="Read", command=self.read_tags, width=10, height=1)
+        btn_read.grid(column=1, row=1, pady=5, padx=5)
 
-    def run(self):
-        """ Start application. """
-        root = Tk()
-        root.title(self.title)
-        root.geometry(self.screen_size)
+    def download_tags(self):
+        """ Run downloading and parsing html. """
+        pass
 
-        # Calling widgets creation
-        self.create_widgets(root)
-
-        root.mainloop()
-
+    def read_tags(self):
+        """ Run reading from database. """
+        pass

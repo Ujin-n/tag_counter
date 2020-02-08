@@ -1,6 +1,7 @@
 import argparse
 import TagGetter as tg
 import TagCounterGUI as tcg
+from tkinter import *
 
 # Parsing arguments
 parser = argparse.ArgumentParser()
@@ -10,8 +11,10 @@ args = parser.parse_args()
 
 if not args.get and not args.view:
     # Calling GUI
-    tag_counter_gui = tcg.TagCounterGUI()
-    tag_counter_gui.run()
+    root = Tk()
+    root.title("Tag Counter")
+    tag_counter = tcg.TagCounterGUI(root)
+    root.mainloop()
 
 elif args.get:
     # Getting the list of tags
