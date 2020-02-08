@@ -2,6 +2,7 @@ import argparse
 import TagGetter as tg
 import TagCounterGUI as tcg
 from tkinter import *
+import DbLoader as dbl
 
 # Parsing arguments
 parser = argparse.ArgumentParser()
@@ -15,6 +16,9 @@ if not args.get and not args.view:
     root.title("Tag Counter")
     tag_counter = tcg.TagCounterGUI(root)
     root.mainloop()
+
+    db = dbl.DbLoader(tag_counter.tag_dict, tag_counter.url_address)
+    db.run()
 
 elif args.get:
     # Console mode

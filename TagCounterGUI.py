@@ -56,13 +56,13 @@ class TagCounterGUI(Frame):
             self.url_error_message()
 
         # print tags counts
-        self.tag_show()
+        self.tags_show()
 
     def read_tags(self):
         """ Run reading from database. """
         ...
 
-    def tag_show(self):
+    def tags_show(self):
         """ Print tag:count dictionary in output area. """
         for tag, count in self.tag_dict.items():
             self.output.insert(0.0, tag + ': ' + str(count) + '\n')
@@ -70,3 +70,4 @@ class TagCounterGUI(Frame):
     def url_error_message(self):
         """ Throw URL error Message Box"""
         messagebox.showinfo("Error", "Incorrect URL: " + self.url_address)
+
