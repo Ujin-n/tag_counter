@@ -2,14 +2,13 @@ from tkinter import *
 from tkinter import messagebox
 from urllib.error import URLError
 import tkinter.scrolledtext as scrolledtext
-
 import TagGetter as tg
 
 
 class TagCounterGUI(Frame):
     """ GUI for tag counter application. """
 
-    def __init__(self, master):
+    def __init__(self, master, current_date, current_time):
         """ Initialize GUI class and set some settings. """
         super().__init__(master)
         self.grid()
@@ -20,6 +19,9 @@ class TagCounterGUI(Frame):
         self.tag_dict = {}
 
         self.create_widgets()
+
+        self.current_date = current_date
+        self.current_time = current_time
 
     def create_widgets(self):
         """ Create all widgets on a window. """
@@ -43,13 +45,22 @@ class TagCounterGUI(Frame):
         self.output = scrolledtext.ScrolledText(self, width=30, height=10)
         self.output.grid(row=4, column=0, pady=5)
 
+    def url_verification(self):
+        """ Verify input URL, add https:// if needed. """
+        if not self.url_address.lower().startswith('https://'):
+            self.url_address = 'https://' + self.url_address
+
     def download_tags(self):
         """ Run downloading and parsing html. """
-        # Getting the list of tags
+        # Get url address
         self.url_address = self.url_entry_label.get()
-        tag_getter = tg.TagGetter(self.url_address)
 
-        # catch url request exception
+        # Run url verification
+        self.url_verification()
+
+        # Get tag dictionary
+        tag_getter = tg.TagGetter(self.url_address, self.current_date, self.current_time)
+
         try:
             self.tag_dict = tag_getter.run()
         except URLError:

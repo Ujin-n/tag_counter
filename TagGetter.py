@@ -1,19 +1,18 @@
 import urllib.request
 from bs4 import BeautifulSoup
-from datetime import datetime
 
 
 class TagGetter:
     """ Gets and counts all tags from passed url page. """
 
-    def __init__(self, url):
+    def __init__(self, url, current_date, current_time):
         """ Initialize tag getter and set input url. """
         self.url = url
+        self.current_date = current_date
+        self.current_time = current_time
 
     def run(self):
         """ Makes url request, parses html page, counts tags and prints them out. """
-        # verify url
-        self.url_verification()
 
         # url request
         html = urllib.request.urlopen(self.url).read()
@@ -32,19 +31,9 @@ class TagGetter:
 
         return tag_dict
 
-    def url_verification(self):
-        """ Verify input URL, add https:// if needed. """
-        if not self.url.lower().startswith('https://'):
-            self.url = 'https://' + self.url
-
     def url_logger(self):
         """ Logs date, time and url. """
-        # getting date/time
-        now = datetime.now()
-        current_time = now.time().strftime("%H:%M:%S")
-        current_date = now.date()
 
         # write to file
         with open('log.txt', 'a') as f_reader:
-            f_reader.write(str(current_date) + ' ' + str(current_time) + ' ' + self.url + '\n')
-
+            f_reader.write(str(self.current_date) + ' ' + str(self.current_time) + ' ' + self.url + '\n')
