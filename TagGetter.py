@@ -11,8 +11,16 @@ class TagGetter:
         self.current_date = current_date
         self.current_time = current_time
 
+    def url_verification(self):
+        """ Verify input URL, add https:// if needed. """
+        if not self.url.lower().startswith('https://'):
+            self.url = 'https://' + self.url
+
     def run(self):
         """ Makes url request, parses html page, counts tags and prints them out. """
+
+        # URL verification
+        self.url_verification()
 
         # url request
         html = urllib.request.urlopen(self.url).read()

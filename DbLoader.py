@@ -46,7 +46,13 @@ class DbLoader:
 
     def url_parser(self):
         """ Method retrieve second-level domain from given url. """
-        res_domain = get_tld(self.url_address, as_object=True)
+        url = self.url_address
+
+        if not url.lower().startswith('https://'):
+            url = 'https://' + url
+
+        res_domain = get_tld(url, as_object=True)
+
         return res_domain.domain
 
     def run(self):

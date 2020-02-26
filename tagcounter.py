@@ -6,6 +6,13 @@ import TagCounterGUI as tcg
 from tkinter import *
 import DbLoader as dbl
 
+
+def db_load(tag_dic, url_address, curr_date):
+    """ Method load data into sqlite db. """
+    db = dbl.DbLoader(tag_dic, url_address, curr_date)
+    db.run()
+
+
 # Parsing arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("--get", help="Get the list of tags.")
@@ -24,18 +31,16 @@ if not args.get and not args.view:
     tag_counter = tcg.TagCounterGUI(root, current_date, current_time)
     root.mainloop()
 
-    # saving tag dictionary into database
-    db = dbl.DbLoader(tag_counter.tag_dict, tag_counter.url_address, current_date)
-    db.run()
+    # Load data into sqlite db
+    db_load(tag_counter.tag_dict, tag_counter.url_address, current_date)
 
 elif args.get:
     # Console mode
-    tag_getter = tg.TagGetter(args.get)
+    tag_getter = tg.TagGetter(args.get, current_date, current_time)
     tag_dict = tag_getter.run()
 
-    # print tag dictionary
-    for tag, count in tag_dict.items():
-        print(tag + ':', count)
+    # Load data into sqlite db
+    db_load(tag_dict, args.get, current_date)
 
 elif args.view:
     # Reading saved data from database

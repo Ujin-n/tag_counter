@@ -45,18 +45,10 @@ class TagCounterGUI(Frame):
         self.output = scrolledtext.ScrolledText(self, width=30, height=10)
         self.output.grid(row=4, column=0, pady=5)
 
-    def url_verification(self):
-        """ Verify input URL, add https:// if needed. """
-        if not self.url_address.lower().startswith('https://'):
-            self.url_address = 'https://' + self.url_address
-
     def download_tags(self):
         """ Run downloading and parsing html. """
         # Get url address
         self.url_address = self.url_entry_label.get()
-
-        # Run url verification
-        self.url_verification()
 
         # Get tag dictionary
         tag_getter = tg.TagGetter(self.url_address, self.current_date, self.current_time)
