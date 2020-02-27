@@ -4,9 +4,9 @@ from tld import get_tld
 
 
 class DbLoader:
-    """ SQL-lite database. """
-    def __init__(self, tag_dict, url_address, current_date):
-        """ Initialize sql-lite db object. """
+    """ SQLite database. """
+    def __init__(self, tag_dict, url_address, current_date, mode):
+        """ Initialize sqlite db object. """
         sqlite3.register_converter("pickle", pickle.loads)
         sqlite3.register_adapter(list, pickle.dumps)
         sqlite3.register_adapter(set, pickle.dumps)
@@ -15,16 +15,22 @@ class DbLoader:
         self.url_address = url_address
         self.table_name = "tags_dictionary"
         self.current_date = current_date
+        self.mode = mode
 
-        self.insert_string = "INSERT into %s values (?, ?, ?, ?)" % self.table_name
-        # self.update_string = "UPDATE %s SET lines=?, parents=? WHERE id=?" % self.table_name
-        self.select_string = "SELECT site_name, url, check_date, tag_dict FROM %s" % self.table_name
+        self.insert_string = "INSERT INTO {}(site_name, url, check_date, tag_dict) " \
+                             "VALUES (?, ?, ?, ?)".format(self.table_name)
+        self.select_string = "SELECT tag_dict " \
+                             "FROM {0} " \
+                             "WHERE url = '{1}'" \
+                             "AND id = (SELECT MAX(ID) " \
+                             "FROM {0} WHERE url = '{1}')".format(self.table_name, self.url_address)
 
     def create_schema(self, cursor):
-        """ Method creates sql-lite database schema. """
+        """ Method creates sqlite database schema. """
         try:
             cursor.execute("""
                 CREATE TABLE %s (
+                    id INTEGER PRIMARY KEY,
                     site_name text,
                     url text,
                     check_date text,
@@ -39,7 +45,7 @@ class DbLoader:
         conn.commit()
 
     def get_obj_from_db(self, cursor):
-        """ Method selects data from sql-lite database. """
+        """ Method selects data from sqlite database. """
         cursor.execute(self.select_string)
         data = cursor.fetchall()
         return data
@@ -60,15 +66,19 @@ class DbLoader:
         conn = sqlite3.connect('tag_statistics.db', detect_types=sqlite3.PARSE_DECLTYPES)
         cursor = conn.cursor()
 
-        # creating database table
-        self.create_schema(cursor)
+        # INSERT INTO DB
+        if self.mode == 'W':
+            # creating database table
+            self.create_schema(cursor)
 
-        # Getting second level domain
-        second_level_domain = str(self.url_parser())
+            # Getting second level domain
+            second_level_domain = str(self.url_parser())
 
-        # inserting tag dictionary
-        db_object = (second_level_domain, self.url_address, self.current_date, str(self.tag_dict))
-        self.insert_into_db(cursor, db_object, conn)
+            # inserting tag dictionary
+            db_object = (second_level_domain, self.url_address, self.current_date, str(self.tag_dict))
+            self.insert_into_db(cursor, db_object, conn)
 
-        # Printing data from database to console (debug purpose)
-        print(self.get_obj_from_db(cursor))
+        # SELECT FROM DB
+        elif self.mode == 'R':
+            return self.get_obj_from_db(cursor)
+
