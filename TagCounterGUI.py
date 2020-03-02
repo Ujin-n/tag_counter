@@ -48,19 +48,23 @@ class TagCounterGUI(Frame):
         self.output = scrolledtext.ScrolledText(self, width=30, height=10)
         self.output.grid(row=4, column=0, pady=5)
 
-    def download_tags(self):
-        """ Run downloading and parsing html. """
-
-        # Get url address
-        self.url_address = self.url_entry_label.get()
-
-        # Synonym check
+    def synonym_check(self):
         with open("synonyms.yaml") as f:
             synonym_list = yaml.load(f, Loader=yaml.FullLoader)
 
         synonym_url = synonym_list.get(self.url_address)
         if synonym_url:
             self.url_address = synonym_url
+
+    def download_tags(self):
+        """ Run downloading and parsing html. """
+        self.output.delete(1.0, END)
+
+        # Get url address
+        self.url_address = self.url_entry_label.get()
+
+        # Synonym check
+        self.synonym_check()
 
         # Get tag dictionary
         tag_getter = tg.TagGetter(self.url_address, self.current_date, self.current_time)
@@ -69,6 +73,7 @@ class TagCounterGUI(Frame):
             self.tag_dict = tag_getter.run()
         except URLError:
             self.url_error_message()
+            return
 
         # Load data into sqlite db
         db = dbl.DbLoader(self.tag_dict, self.url_address, self.current_date, 'W')
@@ -84,13 +89,19 @@ class TagCounterGUI(Frame):
         # Get url address
         self.url_address = self.url_entry_label.get()
 
+        # Synonym check
+        self.synonym_check()
+
         # Read data from sqlite db
         db = dbl.DbLoader(None, self.url_address, None, 'R')
         result_string = db.run()
 
-        result_dict = ast.literal_eval(result_string[0][0])
-        for tag, count in result_dict.items():
-            self.output.insert(0.0, tag + ': ' + str(count) + '\n')
+        if result_string:
+            result_dict = ast.literal_eval(result_string[0][0])
+            for tag, count in result_dict.items():
+                self.output.insert(0.0, tag + ': ' + str(count) + '\n')
+        else:
+            self.output.insert(0.0, "No data found.")
 
     def tags_show(self):
         """ Print tag:count dictionary in output area. """

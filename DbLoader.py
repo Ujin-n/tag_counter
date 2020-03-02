@@ -29,7 +29,7 @@ class DbLoader:
         """ Method creates sqlite database schema. """
         try:
             cursor.execute("""
-                CREATE TABLE %s (
+                CREATE TABLE IF NOT EXISTS %s (
                     id INTEGER PRIMARY KEY,
                     site_name text,
                     url text,
@@ -46,9 +46,13 @@ class DbLoader:
 
     def get_obj_from_db(self, cursor):
         """ Method selects data from sqlite database. """
-        cursor.execute(self.select_string)
-        data = cursor.fetchall()
-        return data
+        try:
+            cursor.execute(self.select_string)
+        except sqlite3.OperationalError:
+            print("No data is available in a database for the given URL: " + self.url_address)
+        else:
+            data = cursor.fetchall()
+            return data
 
     def url_parser(self):
         """ Method retrieve second-level domain from given url. """

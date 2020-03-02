@@ -1,4 +1,6 @@
 import urllib.request
+from urllib.error import URLError
+
 from bs4 import BeautifulSoup
 
 
@@ -23,7 +25,10 @@ class TagGetter:
         self.url_verification()
 
         # url request
-        html = urllib.request.urlopen(self.url).read()
+        try:
+            html = urllib.request.urlopen(self.url).read()
+        except URLError:
+            raise URLError('Incorrect URL')
 
         # url log
         self.url_logger()

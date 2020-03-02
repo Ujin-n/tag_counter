@@ -1,5 +1,7 @@
 import argparse
 from datetime import datetime
+from urllib.error import URLError
+
 import TagGetter as tg
 import TagCounterGUI as tcg
 from tkinter import *
@@ -18,6 +20,19 @@ now = datetime.now()
 current_time = now.time().strftime("%H:%M:%S")
 current_date = now.date()
 
+
+def synonym_check(url):
+    with open("synonyms.yaml") as f:
+        synonym_list = yaml.load(f, Loader=yaml.FullLoader)
+
+    synonym_url = synonym_list.get(url)
+
+    if synonym_url:
+        return synonym_url
+    else:
+        return url
+
+
 if not args.get and not args.view:
     # GUI mode
 
@@ -34,21 +49,22 @@ elif args.get:
     input_url = args.get
 
     # Synonym check
-    with open("synonyms.yaml") as f:
-        synonym_list = yaml.load(f, Loader=yaml.FullLoader)
-    synonym_url = synonym_list.get(args.get)
-    if synonym_url:
-        input_url = synonym_url
+    full_url = synonym_check(input_url)
 
     # Run tag download
-    tag_getter = tg.TagGetter(input_url, current_date, current_time)
-    tag_dict = tag_getter.run()
+    tag_getter = tg.TagGetter(full_url, current_date, current_time)
+
+    try:
+        tag_dict = tag_getter.run()
+    except URLError:
+        print("Incorrect URL.")
+        exit()
 
     for tag, count in tag_dict.items():
         print(tag + ": " + str(count))
 
     # Load data into sqlite db
-    db = dbl.DbLoader(tag_dict, input_url, current_date, 'W')
+    db = dbl.DbLoader(tag_dict, full_url, current_date, 'W')
     db.run()
 
 elif args.view:
@@ -57,11 +73,16 @@ elif args.view:
     # Get input url
     input_url = args.view
 
+    # Synonym check
+    full_url = synonym_check(input_url)
+
     # Read data from sqlite db
-    db = dbl.DbLoader(None, input_url, None, 'R')
+    db = dbl.DbLoader(None, full_url, None, 'R')
     tag_dict = db.run()
 
-    print(tag_dict)
-    tag_dict = ast.literal_eval(tag_dict[0][0])
-    for tag, count in tag_dict.items():
-        print(tag + ": " + str(count))
+    if tag_dict:
+        tag_dict = ast.literal_eval(tag_dict[0][0])
+        for tag, count in tag_dict.items():
+            print(tag + ": " + str(count))
+    else:
+        print("No data found.")
