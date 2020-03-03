@@ -19,6 +19,7 @@ class TagCounterGUI(Frame):
         self.url_entry_label = None
         self.output = None
         self.url_address = None
+
         self.tag_dict = {}
 
         self.create_widgets()
@@ -47,6 +48,14 @@ class TagCounterGUI(Frame):
         # create output Scrolled Text field
         self.output = scrolledtext.ScrolledText(self, width=30, height=10)
         self.output.grid(row=4, column=0, pady=5)
+
+        self.status_label("")
+
+    def status_label(self, status_text):
+        labelframe_widget = LabelFrame(self.master, text="Status")
+        labelframe_widget.grid(row=5, column=0, pady=5, padx=5, sticky=W)
+        label_widget = Label(labelframe_widget, text=status_text, width=43)
+        label_widget.grid()
 
     def synonym_check(self):
         with open("synonyms.yaml") as f:
@@ -82,6 +91,9 @@ class TagCounterGUI(Frame):
         # print tags counts
         self.tags_show()
 
+        # print status line
+        self.status_label("Download complete")
+
     def read_tags(self):
         """ Run reading from database. """
         self.output.delete(1.0, END)
@@ -100,8 +112,13 @@ class TagCounterGUI(Frame):
             result_dict = ast.literal_eval(result_string[0][0])
             for tag, count in result_dict.items():
                 self.output.insert(0.0, tag + ': ' + str(count) + '\n')
+
+            # print status line
+            self.status_label("All data fetched")
+
         else:
-            self.output.insert(0.0, "No data found.")
+            # print status line
+            self.status_label("No data found")
 
     def tags_show(self):
         """ Print tag:count dictionary in output area. """
@@ -114,3 +131,5 @@ class TagCounterGUI(Frame):
         """ Throw URL error Message Box"""
         messagebox.showinfo("Error", "Incorrect URL: " + self.url_address)
 
+        # print status line
+        self.status_label("Incorrect URL: " + self.url_address)

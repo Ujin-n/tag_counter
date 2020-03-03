@@ -84,5 +84,3 @@ elif args.view:
         tag_dict = ast.literal_eval(tag_dict[0][0])
         for tag, count in tag_dict.items():
             print(tag + ": " + str(count))
-    else:
-        print("No data found.")
