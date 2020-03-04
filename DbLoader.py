@@ -40,7 +40,7 @@ class DbLoader:
             print(e)
 
     def insert_into_db(self, cursor, obj, conn):
-        """ Method inserts data into sql-lite database. """
+        """ Method inserts data into sqlite database. """
         cursor.execute(self.insert_string, obj)
         conn.commit()
 
